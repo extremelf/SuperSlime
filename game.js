@@ -69,8 +69,11 @@ class playGame extends Phaser.Scene{
     create(){
         this.addBackground();
         this.addPlayer();
+        this.addBall();
 
-    }
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(true);
+}
 
     addBackground(){
         let background = this.add.sprite(0, 0, "background");
@@ -92,5 +95,11 @@ class playGame extends Phaser.Scene{
         //this.player.add.bounce(0.2);
         //player.setBounce(0.2);
         //player.setCollideWorldBounds(true);
+    }
+    addBall(){
+
+        let ball = this.add.sprite(1,1,"ball");
+
+        ball.setOrigin(0,0);
     }
 }
