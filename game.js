@@ -1,45 +1,96 @@
- var config = {
+let game;
+let gameOptions = {
     type:Phaser.AUTO,
-    width: 1920,
-    height: 1080,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300},
-            debug: false
-        }
+    defaultSize: {
+        width: 1920,
+        height: 1080,
+        maxRatio: 16 / 9
     },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
+    physics:{
+        default: "arcade",
+        arcade:{
+            gravity: { y:300},
+            debug: true
+        }
     }
- };
-
-var game = new Phaser.Game(config);
-var player;
-function preload(){
-    this.load.image('ground', 'assets/PNG/game_background_4/layers/ground.png');
-    this.load.image('sky','assets/PNG/game_background_4/layers/sky.png');
-    this.load.image('rocks', 'assets/PNG/game_background_4/layers/rocks.png');
-    this.load.image('clouds_1', 'assets/PNG/game_background_4/layers/clouds_1.png');
-    this.load.image('clouds_2', 'assets/PNG/game_background_4/layers/clouds_2.png');
-    this.load.image('slime','assets/Untitled.png');
 }
 
-function create(){
-    this.add.image(960,540,'sky');
-    this.add.image(960,540,'clouds_1');
-    this.add.image(960,540,'rocks');
-    this.add.image(960,540,'clouds_2');
-    this.add.image(960,540,'ground');
+window.onload = function() {
+let width = gameOptions.defaultSize.width;
+let height = gameOptions.defaultSize.height;
+let perfectRatio = width / height;
+let innerWidth = window.innerWidth;
+let innerHeight = window.innerHeight;
+let actualRatio = Math.min(innerWidth / innerHeight, gameOptions.defaultSize.maxRatio);
+if(perfectRatio > actualRatio){
+    height = width / actualRatio;
+}
+else{
+    width = height * actualRatio;
+}
+let gameConfig = {
+    type: Phaser.AUTO,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        parent: "superslime",
+        width: width,
+        height: height
+    },
+    backgroundColor: 0x132c43,
 
-    player = this.physics.add.image(100,450,'slime');
-
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
+    scene :[preloadGame, playGame]
+}
+game = new Phaser.Game(gameConfig);
+window.focus();
 }
 
-function update(){
+let player;
 
+class preloadGame extends Phaser.Scene{
+    constructor(){
+        super("preloadGame");
+    }
+    preload(){
+        this.load.image('background', 'assets/PNG/game_background_4/game_background_4.png');
+        this.load.image('slime','assets/Untitled.png');
+
+    }
+    create(){
+        this.scene.start("PlayGame");
+    }
+}
+
+class playGame extends Phaser.Scene{
+    constructor(){
+        super("PlayGame");
+
+    }
+    create(){
+        this.addBackground();
+        this.addPlayer();
+
+    }
+
+    addBackground(){
+        let background = this.add.sprite(0, 0, "background");
+
+        //this.arcade.background.setBounds(0, 0, gameOptions.width, gameOptions.height);
+        background.setOrigin(0, 0);
+        background.displayWidth = game.config.width + 100;
+        background.displayHeight = game.config.height + 100;
+    }
+
+    addPlayer(){
+        //this.player = this.arcade.add.sprite(100,450,'slime');
+        //this.player.physics.add(arcade);
+        //this.player = this.physics.add.image(100, 450,'slime');
+        //this.player.setOrigin(0,0);
+        //player = this.arcade.add.sprite(300,360,"slime")
+        //this.player.add.physics.arcade.gravity.y=300;
+        //this.player.add.physics.arcade.debug=true;
+        //this.player.add.bounce(0.2);
+        //player.setBounce(0.2);
+        //player.setCollideWorldBounds(true);
+    }
 }
