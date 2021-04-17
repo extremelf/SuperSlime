@@ -1,6 +1,8 @@
 
 let game;
 let player;
+let ball;
+let goal1;
 let gameOptions = {
     type:Phaser.AUTO,
     defaultSize: {
@@ -56,7 +58,8 @@ class preloadGame extends Phaser.Scene{
     preload(){
         this.load.image("background", "assets/PNG/game_background_4/game_background_4.png");
         this.load.image("slime","assets/Untitled.png");
-
+        this.load.image("ball","assets/PNG/ball.png");
+        this.load.image("goal","assets/PNG/goal.png")
     }
     create(){
 
@@ -72,6 +75,9 @@ class playGame extends Phaser.Scene{
     create(){
         this.addBackground();
         this.addPlayer();
+        //this.addBall();
+        this.addGoal1();
+
     }
 
     addBackground(){
@@ -88,6 +94,38 @@ class playGame extends Phaser.Scene{
         this.player.setBounce(0.4);
         this.player.anims.play("right");
         this.player.setCollideWorldBounds(true);
+
+    }
+
+
+    /**
+     * pá ya assim simplesmente aparece uma bola gigante
+     *
+        //ball.setOrigin(0,0);
+        //ball.scale(0.2)
+     *
+     * isto devia funcionar e nao funfa
+     */
+    addBall(){
+        ball = this.add.sprite(20, 20, "ball");
+
+    }
+
+    /**
+     * fiz uma pesquisa entre this.add.sprite e this.add.image e sprite é para coisas animadas, daí as
+     * balizas poderem ser estaticas e serem imagens
+     */
+
+
+    addGoal1(){
+        this.goal1 = this.add.image(100, 850, "goal");
+        this.goal1.displayHeight=500;
+        this.goal1.displayWidth=200;
+
+        /** COMANDOS QUE DEVIAM FUNCIONAR MAS ASSIM QUE DAS UNCOMMENT NADA FUNCIONA
+         *  //this.goal1.invert();
+         *
+         */
 
     }
 }
