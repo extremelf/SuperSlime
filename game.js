@@ -1,17 +1,12 @@
+
 let game;
+let player;
 let gameOptions = {
     type:Phaser.AUTO,
     defaultSize: {
         width: 1920,
         height: 1080,
         maxRatio: 16 / 9
-    },
-    physics:{
-        default: "arcade",
-        arcade:{
-            gravity: { y:300},
-            debug: true
-        }
     }
 }
 
@@ -33,9 +28,16 @@ let gameConfig = {
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        parent: "superslime",
-        width: width,
-        height: height
+        parent: "superSlime",
+        width: gameOptions.defaultSize.width,
+        height: gameOptions.defaultSize.height
+    },
+    physics:{
+        default: "arcade",
+        arcade:{
+            gravity: { y:300},
+            debug: true
+        }
     },
     backgroundColor: 0x132c43,
 
@@ -45,18 +47,19 @@ game = new Phaser.Game(gameConfig);
 window.focus();
 }
 
-let player;
+
 
 class preloadGame extends Phaser.Scene{
     constructor(){
         super("preloadGame");
     }
     preload(){
-        this.load.image('background', 'assets/PNG/game_background_4/game_background_4.png');
-        this.load.image('slime','assets/Untitled.png');
+        this.load.image("background", "assets/PNG/game_background_4/game_background_4.png");
+        this.load.image("slime","assets/Untitled.png");
 
     }
     create(){
+
         this.scene.start("PlayGame");
     }
 }
@@ -69,37 +72,22 @@ class playGame extends Phaser.Scene{
     create(){
         this.addBackground();
         this.addPlayer();
-        this.addBall();
-
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
-}
+    }
 
     addBackground(){
         let background = this.add.sprite(0, 0, "background");
 
         //this.arcade.background.setBounds(0, 0, gameOptions.width, gameOptions.height);
         background.setOrigin(0, 0);
-        background.displayWidth = game.config.width + 100;
-        background.displayHeight = game.config.height + 100;
+        background.displayWidth = gameOptions.defaultSize.width + 100;
+        background.displayHeight = gameOptions.defaultSize.height + 100;
     }
 
     addPlayer(){
-        //this.player = this.arcade.add.sprite(100,450,'slime');
-        //this.player.physics.add(arcade);
-        //this.player = this.physics.add.image(100, 450,'slime');
-        //this.player.setOrigin(0,0);
-        //player = this.arcade.add.sprite(300,360,"slime")
-        //this.player.add.physics.arcade.gravity.y=300;
-        //this.player.add.physics.arcade.debug=true;
-        //this.player.add.bounce(0.2);
-        //player.setBounce(0.2);
-        //player.setCollideWorldBounds(true);
-    }
-    addBall(){
+        this.player = this.physics.add.sprite(100,450,"slime");
+        this.player.setBounce(0.4);
+        this.player.anims.play("right");
+        this.player.setCollideWorldBounds(true);
 
-        let ball = this.add.sprite(1,1,"ball");
-
-        ball.setOrigin(0,0);
     }
 }
