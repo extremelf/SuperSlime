@@ -20,12 +20,15 @@ let score1 = 0;
 let score2 = 0;
 let score1Text;
 let score2Text;
+
 let wasd;
 
 let keyA;
 let keyS;
 let keyD;
 let keyW;
+let gameover=false;
+
 
 window.onload = function(){
     let width = gameOptions.defaultSize.width;
@@ -115,9 +118,9 @@ function create ()
 
     ball = this.physics.add.image(game.config.width/2,game.config.height/2,"ball").setScale(0.15);
     ball.body.setCircle(375);
+
     ball.body.setBounce(0.3);
     ball.body.setCollideWorldBounds(true,1,1);
-
 
     player = this.physics.add.sprite(100,450,"slime");
     player.setBounce(0.2);
@@ -130,9 +133,12 @@ function create ()
     score1Text = this.add.text(16,16,"Score: 0",{fontSize: "32px", fill:"#000"});
     score2Text = this.add.text(game.config.width-200,16,"Score: 0",{fontSize: "32px", fill:"#000"});
 
-
     this.physics.add.collider(ball,balizaCollider,goal2);
     this.physics.add.collider(ball,balizaCollider2,goal1);
+
+   // this.physics.add.collider(ball,balizaCollider,goal2,endgame,null,this);
+   // this.physics.add.collider(ball,balizaCollider2,goal1,endgame,null,this);
+
     this.physics.add.collider(ball,ground);
     this.physics.add.collider(player,ball);
     this.physics.add.collider(ball,baliza);
@@ -169,6 +175,12 @@ function create ()
 
 function update ()
 {
+
+
+    if (gameover){
+        return;
+    }
+
     cursors = this.input.keyboard.createCursorKeys();
     wasd = {
         up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -223,7 +235,11 @@ function goal2(){
     score2Text.setText("Score: " + score2);
 }
 
-function restart(){
-    this.scene.destroy();
-    this.scene.create();
+function endgame(score1, score2){
+
+    if (score1==60 || score2==60){
+        gameover=true
+        this.scene.restart();
+
+    }
 }
