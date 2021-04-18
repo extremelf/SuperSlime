@@ -5,8 +5,9 @@ let gameOptions = {
         maxRatio: 16 / 9
     }
 }
-let game
+let game;
 let player;
+let player2;
 let cursors;
 let background;
 let ground;
@@ -19,6 +20,13 @@ let score1 = 0;
 let score2 = 0;
 let score1Text;
 let score2Text;
+let wasd;
+
+let keyA;
+let keyS;
+let keyD;
+let keyW;
+
 window.onload = function(){
     let width = gameOptions.defaultSize.width;
     let height = gameOptions.defaultSize.height;
@@ -44,7 +52,7 @@ window.onload = function(){
             default: "arcade",
             arcade: {
                 gravity:{ y:300 },
-                debug:false
+                debug:true
             },
             matter: {
                 gravity:{y:0},
@@ -106,25 +114,33 @@ function create ()
 
 
     ball = this.physics.add.image(game.config.width/2,game.config.height/2,"ball").setScale(0.15);
-    ball.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    ball.body.setCircle(375);
+    ball.body.setBounce(0.3);
+    ball.body.setCollideWorldBounds(true,1,1);
 
-    ball.setCollideWorldBounds(true);
 
     player = this.physics.add.sprite(100,450,"slime");
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
+    player2 = this.physics.add.sprite(game.config.width-100,450,"slime");
+    player2.setBounce(0.2);
+    player2.setCollideWorldBounds(true);
+
     score1Text = this.add.text(16,16,"Score: 0",{fontSize: "32px", fill:"#000"});
     score2Text = this.add.text(game.config.width-200,16,"Score: 0",{fontSize: "32px", fill:"#000"});
 
 
-    this.physics.add.collider(ball,balizaCollider,goal2,null,this);
-    this.physics.add.collider(ball,balizaCollider2,goal1,null,this);
+    this.physics.add.collider(ball,balizaCollider,goal2);
+    this.physics.add.collider(ball,balizaCollider2,goal1);
     this.physics.add.collider(ball,ground);
     this.physics.add.collider(player,ball);
     this.physics.add.collider(ball,baliza);
     this.physics.add.collider(ball,baliza2);
     this.physics.add.collider(player,ground);
+    this.physics.add.collider(player2,ground);
+    this.physics.add.collider(player2,ball);
+
     this.anims.create({
         key: "left",
         frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 3 }),
@@ -144,13 +160,23 @@ function create ()
         frameRate: 10,
         repeat: -1
     });
-
+    keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 
 }
 
 function update ()
 {
     cursors = this.input.keyboard.createCursorKeys();
+    wasd = {
+        up: Phaser.Input.Keyboard.KeyCodes.W,
+        down: Phaser.Input.Keyboard.KeyCodes.S,
+        left: Phaser.Input.Keyboard.KeyCodes.A,
+        right: Phaser.Input.Keyboard.KeyCodes.D,
+    };
+
     if(cursors.left.isDown){
         player.setVelocityX(-160);
         player.anims.play("left");
@@ -167,6 +193,22 @@ function update ()
     if(cursors.up.isDown && player.body.touching.down){
         player.setVelocityY(-330);
     }
+    if(keyA.isDown){
+        player2.setVelocityX(-160);
+        player2.anims.play("left");
+    }
+
+    else if(keyD.isDown){
+        player2.setVelocityX(160);
+        player2.anims.play("right");
+    }
+    else{
+        player2.setVelocityX(0);
+        player2.anims.play("turn");
+    }
+    if (keyW.isDown && player2.body.touching.down){
+        player2.setVelocityY(-330);
+    }
 }
 
 function goal1(){
@@ -179,4 +221,9 @@ function goal2(){
     score2 +=1;
 
     score2Text.setText("Score: " + score2);
+}
+
+function restart(){
+    this.scene.destroy();
+    this.scene.create();
 }
