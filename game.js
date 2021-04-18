@@ -19,6 +19,8 @@ let score1 = 0;
 let score2 = 0;
 let score1Text;
 let score2Text;
+let gameover=false;
+
 window.onload = function(){
     let width = gameOptions.defaultSize.width;
     let height = gameOptions.defaultSize.height;
@@ -106,9 +108,9 @@ function create ()
 
 
     ball = this.physics.add.image(game.config.width/2,game.config.height/2,"ball").setScale(0.15);
-    ball.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    ball.body.setCircle(375);
 
-    ball.setCollideWorldBounds(true);
+    ball.setCollideWorldBounds(true,1,1);
 
     player = this.physics.add.sprite(100,450,"slime");
     player.setBounce(0.2);
@@ -118,8 +120,8 @@ function create ()
     score2Text = this.add.text(game.config.width-200,16,"Score: 0",{fontSize: "32px", fill:"#000"});
 
 
-    this.physics.add.collider(ball,balizaCollider,goal2,null,this);
-    this.physics.add.collider(ball,balizaCollider2,goal1,null,this);
+    this.physics.add.collider(ball,balizaCollider,goal2,endgame,null,this);
+    this.physics.add.collider(ball,balizaCollider2,goal1,endgame,null,this);
     this.physics.add.collider(ball,ground);
     this.physics.add.collider(player,ball);
     this.physics.add.collider(ball,baliza);
@@ -150,6 +152,12 @@ function create ()
 
 function update ()
 {
+
+
+    if (gameover){
+        return;
+    }
+
     cursors = this.input.keyboard.createCursorKeys();
     if(cursors.left.isDown){
         player.setVelocityX(-160);
@@ -179,4 +187,13 @@ function goal2(){
     score2 +=1;
 
     score2Text.setText("Score: " + score2);
+}
+
+function endgame(score1, score2){
+
+    if (score1==60 || score2==60){
+        gameover=true
+        this.scene.restart();
+
+    }
 }
