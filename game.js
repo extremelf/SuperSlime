@@ -183,7 +183,7 @@ class playGame extends Phaser.Scene{
         this.addGameObjects();
         this.addScore();
         this.addColliders();
-        this.addWASD();
+        this.addKeyboard();
     }
 
     addBackground(){
@@ -253,25 +253,21 @@ class playGame extends Phaser.Scene{
         this.physics.add.collider(player2,ball);
     }
 
-    addWASD(){
+    addKeyboard(){
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    }
-
-    update(){
-
-        console.log("updated...");
-
-        cursors = this.input.keyboard.createCursorKeys();
         wasd = {
             up: Phaser.Input.Keyboard.KeyCodes.W,
             down: Phaser.Input.Keyboard.KeyCodes.S,
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D,
         };
+        cursors = this.input.keyboard.createCursorKeys();
+    }
 
+    update(){
         if(cursors.left.isDown){
             player.setVelocityX(-160);
             player.anims.play("left");
