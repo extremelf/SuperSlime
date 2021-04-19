@@ -304,13 +304,17 @@ class playGame extends Phaser.Scene{
 
     goal1(){
         score1 +=1;
-        ball.setPosition(0,0);
+        ball.setPosition(game.config.width/2,game.config.height/2);
+        player.setPosition(100,450);
+        player2.setPosition(game.config.width-100,450);
         score1Text.setText("Score: " + score1);
     }
 
     goal2(){
         score2 +=1;
-        ball.setPosition(0,0);
+        ball.setPosition(game.config.width/2,game.config.height/2);
+        player.setPosition(100,450);
+        player2.setPosition(game.config.width-100,450);
         score2Text.setText("Score: " + score2);
     }
 
