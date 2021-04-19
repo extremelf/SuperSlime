@@ -42,6 +42,8 @@ window.onload = function(){
     } else {
         width = height * actualRatio;
     }
+
+
     let gameConfig = {
         type: Phaser.AUTO,
         scale:{
@@ -51,29 +53,32 @@ window.onload = function(){
             width: width,
             height: height
         },
-        physics:{
+        physics: {
             default: "arcade",
             arcade: {
-                gravity:{ y:300 },
-                debug:true
+                gravity: {y: 300},
+                debug: true
             },
             matter: {
-                gravity:{y:0},
-                setBounds:{
+                gravity: {y: 0},
+                setBounds: {
                     left: true,
                     right: true,
                     top: true,
                     bottom: true
                 },
-                debug:true
+                debug: true
             }
         },
-        scene:{
+        scene:[
+            menuScene,
+            {
             preload: preload,
             create: create,
             update: update
-        }
+        }]
     }
+
     game = new Phaser.Game(gameConfig);
     console.log("1");
     window.focus();
@@ -117,6 +122,7 @@ function create ()
 
 
     ball = this.physics.add.image(game.config.width/2,game.config.height/2,"ball").setScale(0.15);
+
     ball.body.setCircle(375);
 
     ball.body.setBounce(0.3);
@@ -176,6 +182,8 @@ function create ()
 function update ()
 {
 
+    console.log("updated...");
+
 
     if (gameover){
         return;
@@ -225,19 +233,20 @@ function update ()
 
 function goal1(){
     score1 +=1;
-
+    ball.setPosition(0,0);
     score1Text.setText("Score: " + score1);
 }
 
 function goal2(){
     score2 +=1;
-
+    ball.setPosition(0,0);
     score2Text.setText("Score: " + score2);
 }
 
 function endgame(score1, score2){
 
     if (score1==60 || score2==60){
+
         gameover=true
         this.scene.restart();
 
