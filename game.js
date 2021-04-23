@@ -18,6 +18,8 @@ let balizaCollider2;
 let ball;
 let score1 = 0;
 let score2 = 0;
+let winnerScore = 0;
+let loserScore = 0;
 let score1Text;
 let score2Text;
 
@@ -173,14 +175,14 @@ class menuGame extends Phaser.Scene {
 
         let playButtonX = game.config.width / 2;
         let playButtonY = game.config.height / 2 - 20;
-        let playButton = this.add.sprite(playButtonX, playButtonY, "play").setScale(0.5);
+        let playButton = this.add.sprite(playButtonX, playButtonY, "play").setScale(window.devicePixelRatio / 3);
 
         playButton.setInteractive();
 
         playButton.on("pointerup", function () {
             this.guiGroup.toggleVisible();
             this.guiGroup.active = false;
-            this.scene.start("EndGame");
+            this.scene.start("PlayGame");
         }, this);
 
         this.guiGroup.add(playButton);
@@ -328,6 +330,14 @@ class playGame extends Phaser.Scene {
         player.setPosition(100, 450);
         player2.setPosition(game.config.width - 100, 450);
         if (score1 === 2 || score2 === 2) {
+            if (score1 > score2) {
+                winnerScore = score1;
+                loserScore = score2;
+            }
+            else{
+                winnerScore = score2;
+                loserScore = score1;
+            }
             this.scene.start("EndGame");
         }
     }
@@ -353,20 +363,29 @@ class endGame extends Phaser.Scene {
         Overlay2.alpha = 0.8;
 
 
-        let BackBoard = this.add.sprite(game.config.width / 2, game.config.height / 8, "backBoard");
+        let BackBoard = this.add.sprite(game.config.width / 2, game.config.height / 8, "backBoard").setScale(game.config.height / game.config.width);
 
         BackBoard.setOrigin(0.5, 0);
 
-        let winner = this.add.sprite((game.config.width / 4) + 200, game.config.height / 8 + 100 , "win").setScale(0.25);
+        let winner = this.add.sprite((game.config.width * 3 / 8) + 100, game.config.height / 8 + 100, "win").setScale(window.devicePixelRatio / 4);
         winner.setOrigin(0.5, 0);
 
-        let loser = this.add.sprite(game.config.width - (game.config.width / 4 + 250), game.config.height / 8 + 100, "lose").setScale(0.25);
+        let winnerScoreText = this.add.text((game.config.width * 3 / 8), game.config.height / 2, ("Score: " + winnerScore), {
+            fontSize: "32px",
+            fill: "#000"
+        });
+
+        let loser = this.add.sprite(game.config.width - ((game.config.width * 3 / 8) + 100), game.config.height / 8 + 100, "lose").setScale(window.devicePixelRatio / 4);
         loser.setOrigin(0.5, 0);
 
+        let loserScoreText = this.add.text((game.config.width - ((game.config.width * 3 / 8) + 100)), game.config.height / 2, ("Score: " + loserScore), {
+            fontSize: "32px",
+            fill: "#000"
+        });
 
         let playButton2X = game.config.width / 2;
-        let playButton2Y = game.config.height * 3/4 - 100;
-        let playButton2 = this.add.sprite(playButton2X, playButton2Y, "play").setScale(0.5);
+        let playButton2Y = game.config.height * 3 / 4 - 100;
+        let playButton2 = this.add.sprite(playButton2X, playButton2Y, "play").setScale(window.devicePixelRatio / 3);
 
         playButton2.setInteractive();
 
