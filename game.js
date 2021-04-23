@@ -101,6 +101,11 @@ class preloadGame extends Phaser.Scene {
         this.load.image("playbutton", "assets/playbutton.png"); //
         this.load.image("title", "assets/title.png"); //
         this.load.image("tile", "assets/tile.png"); //
+        this.load.image("logo", "assets/logo.png");
+        this.load.spritesheet("icons", "assets/icons.png", {
+            frameWidth: 150,
+            frameHeight: 150
+        });
     }
 
     create() {
@@ -135,6 +140,8 @@ class menuGame extends Phaser.Scene {
     }
 
     create() {
+        score1 = 0;
+        score2 = 0;
         this.addGameTitle();
     }
 
@@ -238,8 +245,8 @@ class playGame extends Phaser.Scene {
     }
 
     addColliders() {
-        this.physics.add.collider(ball, balizaCollider, this.goal2);
-        this.physics.add.collider(ball, balizaCollider2, this.goal1);
+        this.physics.add.collider(ball, balizaCollider, this.goal2, null, this);
+        this.physics.add.collider(ball, balizaCollider2, this.goal1, null, this);
 
         // this.physics.add.collider(ball,balizaCollider,goal2,endgame,null,this);
         // this.physics.add.collider(ball,balizaCollider2,goal1,endgame,null,this);
@@ -298,29 +305,25 @@ class playGame extends Phaser.Scene {
 
     goal1() {
         score1 += 1;
-        ball.setPosition(game.config.width / 2, game.config.height / 2);
-        player.setPosition(100, 450);
-        player2.setPosition(game.config.width - 100, 450);
         score1Text.setText("Score: " + score1);
+        this.gameStatus();
     }
 
     goal2() {
         score2 += 1;
+        score2Text.setText("Score: " + score2);
+        this.gameStatus();
+    }
+
+    gameStatus() {
         ball.setPosition(game.config.width / 2, game.config.height / 2);
         player.setPosition(100, 450);
         player2.setPosition(game.config.width - 100, 450);
-        score2Text.setText("Score: " + score2);
-    }
-
-    endgame(score1, score2) {
-
-        if (score1 === 60 || score2 === 60) {
-
-            gameover = true
-            this.scene.restart();
-
+        if (score1 === 2 || score2 === 2) {
+            this.scene.start("MenuGame");
         }
     }
+
 }
 
 
