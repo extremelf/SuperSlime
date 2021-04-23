@@ -73,7 +73,8 @@ window.onload = function () {
         scene: [
             preloadGame,
             menuGame,
-            playGame
+            playGame,
+            endGame
         ]
     }
 
@@ -98,14 +99,21 @@ class preloadGame extends Phaser.Scene {
             {frameWidth: 32, frameHeight: 48}
         );
 
-        this.load.image("playbutton", "assets/playbutton.png"); //
         this.load.image("title", "assets/title.png"); //
         this.load.image("tile", "assets/tile.png"); //
         this.load.image("logo", "assets/logo.png");
+        this.load.image("play", "assets/UI/PNG/menu/play.png")
         this.load.spritesheet("icons", "assets/icons.png", {
             frameWidth: 150,
             frameHeight: 150
         });
+
+        //endGame assets
+
+        this.load.image("backBoard", "assets/UI/PNG/you_win/bg.png");
+        this.load.image("win", "assets/UI/PNG/you_win/header.png");
+        this.load.image("lose", "assets/UI/PNG/you_lose/header.png");
+        this.load.image("table", "assets/UI/PNG/you_win/table.png");
     }
 
     create() {
@@ -149,14 +157,14 @@ class menuGame extends Phaser.Scene {
     addGameTitle() {
         this.guiGroup = this.add.group();
 
-        let blackOverlay = this.add.sprite(0, 0, "tile");
+        let Overlay = this.add.sprite(0, 0, "background");
 
-        blackOverlay.setOrigin(0, 0);
-        blackOverlay.displayWidth = game.config.width;
-        blackOverlay.displayHeight = game.config.height;
-        blackOverlay.alpha = 0.8;
+        Overlay.setOrigin(0, 0);
+        Overlay.displayWidth = game.config.width;
+        Overlay.displayHeight = game.config.height;
+        Overlay.alpha = 0.8;
 
-        this.guiGroup.add(blackOverlay);
+        this.guiGroup.add(Overlay);
 
         let title = this.add.sprite(game.config.width / 2, 50, "title");
         title.setOrigin(0.5, 0);
@@ -165,14 +173,14 @@ class menuGame extends Phaser.Scene {
 
         let playButtonX = game.config.width / 2;
         let playButtonY = game.config.height / 2 - 20;
-        let playButton = this.add.sprite(playButtonX, playButtonY, "playbutton");
+        let playButton = this.add.sprite(playButtonX, playButtonY, "play").setScale(0.5);
 
         playButton.setInteractive();
 
         playButton.on("pointerup", function () {
             this.guiGroup.toggleVisible();
             this.guiGroup.active = false;
-            this.scene.start("PlayGame");
+            this.scene.start("EndGame");
         }, this);
 
         this.guiGroup.add(playButton);
@@ -320,8 +328,53 @@ class playGame extends Phaser.Scene {
         player.setPosition(100, 450);
         player2.setPosition(game.config.width - 100, 450);
         if (score1 === 2 || score2 === 2) {
-            this.scene.start("MenuGame");
+            this.scene.start("EndGame");
         }
+    }
+
+}
+
+class endGame extends Phaser.Scene {
+    constructor() {
+        super("EndGame");
+    }
+
+    create() {
+        this.addFinalInfo()
+    }
+
+    addFinalInfo() {
+        let Overlay2 = this.add.sprite(0, 0, "background");
+
+        Overlay2.setOrigin(0, 0);
+
+        Overlay2.displayWidth = game.config.width;
+        Overlay2.displayHeight = game.config.height;
+        Overlay2.alpha = 0.8;
+
+
+        let BackBoard = this.add.sprite(game.config.width / 2, game.config.height / 8, "backBoard");
+
+        BackBoard.setOrigin(0.5, 0);
+
+        let winner = this.add.sprite((game.config.width / 4) + 200, game.config.height / 8 + 100 , "win").setScale(0.25);
+        winner.setOrigin(0.5, 0);
+
+        let loser = this.add.sprite(game.config.width - (game.config.width / 4 + 250), game.config.height / 8 + 100, "lose").setScale(0.25);
+        loser.setOrigin(0.5, 0);
+
+
+        let playButton2X = game.config.width / 2;
+        let playButton2Y = game.config.height * 3/4 - 100;
+        let playButton2 = this.add.sprite(playButton2X, playButton2Y, "play").setScale(0.5);
+
+        playButton2.setInteractive();
+
+        playButton2.on("pointerup", function () {
+            this.scene.start("MenuGame");
+        }, this);
+
+
     }
 
 }
