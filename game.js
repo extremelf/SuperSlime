@@ -23,6 +23,9 @@ let loserScore = 0;
 let score1Text;
 let score2Text;
 
+let selectedSlimePlayer1;
+let selectedSlimePlayer2;
+
 let wasd;
 
 let keyA;
@@ -76,7 +79,8 @@ window.onload = function () {
             preloadGame,
             menuGame,
             playGame,
-            endGame
+            endGame,
+            selectMenu
         ]
     }
 
@@ -84,6 +88,7 @@ window.onload = function () {
     console.log("1");
     window.focus();
 };
+
 
 class preloadGame extends Phaser.Scene {
     constructor() {
@@ -97,9 +102,14 @@ class preloadGame extends Phaser.Scene {
         this.load.image("baliza", "assets/baliza.png");
         this.load.image("balizaCollider", "assets/balizaCollider.png");
         this.load.image("ball", "assets/ball.png");
-        this.load.spritesheet("slime", "assets/img.png",
+        /*this.load.spritesheet("slime", "assets/img.png",
             {frameWidth: 32, frameHeight: 48}
         );
+         */
+        this.load.image("slime", "assets/asdd.png");
+        this.load.image("slime1", "assets/asddBlue.png");
+        this.load.image("slime2", "assets/asddRed.png");
+        this.load.image("slime3", "assets/asddGreen.png");
 
         this.load.image("title", "assets/title.png"); //
         this.load.image("tile", "assets/tile.png"); //
@@ -116,9 +126,14 @@ class preloadGame extends Phaser.Scene {
         this.load.image("win", "assets/UI/PNG/you_win/header.png");
         this.load.image("lose", "assets/UI/PNG/you_lose/header.png");
         this.load.image("table", "assets/UI/PNG/you_win/table.png");
+
+        //select Menu
+
+
     }
 
     create() {
+        /*
         this.anims.create({
             key: "left",
             frames: this.anims.generateFrameNumbers("slime", {start: 0, end: 3}),
@@ -139,7 +154,9 @@ class preloadGame extends Phaser.Scene {
             repeat: -1
         });
 
-        this.scene.start("MenuGame");
+         */
+
+        this.scene.start("SelectMenu");
     }
 }
 
@@ -214,21 +231,23 @@ class playGame extends Phaser.Scene {
         ground.setOrigin(0, 10);
 
         balizaCollider = this.physics.add.staticGroup();
-        balizaCollider.create(180, game.config.height - 120, "balizaCollider").setScale(0.3).refreshBody();
+        balizaCollider.create(157, game.config.height - 120, "balizaCollider").setScale(0.3).refreshBody();
 
 
         balizaCollider2 = this.physics.add.staticGroup();
-        balizaCollider2.create(game.config.width - 180, game.config.height - 120, "balizaCollider").setScale(0.3).refreshBody();
+        balizaCollider2.create(game.config.width - 157, game.config.height - 120, "balizaCollider").setScale(0.3).refreshBody();
 
 
     }
 
     addPlayers() {
-        player = this.physics.add.sprite(100, 450, "slime");
+        player = this.physics.add.sprite(100, 450, selectedSlimePlayer1).setScale(0.20);
         player.setBounce(0.2);
+        player.tint = 0xff0000;
         player.setCollideWorldBounds(true);
 
-        player2 = this.physics.add.sprite(game.config.width - 100, 450, "slime");
+        player2 = this.physics.add.sprite(game.config.width - 100, 450, selectedSlimePlayer2).setScale(0.20);
+        player2.flipX = true;
         player2.setBounce(0.2);
         player2.setCollideWorldBounds(true);
     }
@@ -287,26 +306,26 @@ class playGame extends Phaser.Scene {
     update() {
         if (cursors.left.isDown) {
             player.setVelocityX(-160);
-            player.anims.play("left");
+            // player.anims.play("left");
         } else if (cursors.right.isDown) {
             player.setVelocityX(160);
-            player.anims.play("right");
+            //player.anims.play("right");
         } else {
             player.setVelocityX(0);
-            player.anims.play("turn");
+            // player.anims.play("turn");
         }
         if (cursors.up.isDown && player.body.touching.down) {
             player.setVelocityY(-330);
         }
         if (keyA.isDown) {
             player2.setVelocityX(-160);
-            player2.anims.play("left");
+            //player2.anims.play("left");
         } else if (keyD.isDown) {
             player2.setVelocityX(160);
-            player2.anims.play("right");
+            // player2.anims.play("right");
         } else {
             player2.setVelocityX(0);
-            player2.anims.play("turn");
+            //player2.anims.play("turn");
         }
         if (keyW.isDown && player2.body.touching.down) {
             player2.setVelocityY(-330);
@@ -333,8 +352,7 @@ class playGame extends Phaser.Scene {
             if (score1 > score2) {
                 winnerScore = score1;
                 loserScore = score2;
-            }
-            else{
+            } else {
                 winnerScore = score2;
                 loserScore = score1;
             }
@@ -375,10 +393,12 @@ class endGame extends Phaser.Scene {
             fill: "#000"
         });
 
+        let winnerUser = this.add.image((game.config.width * 3 / 8) + 100, game.config.height * 3 / 8, "slime");
+
         let loser = this.add.sprite(game.config.width - ((game.config.width * 3 / 8) + 100), game.config.height / 8 + 100, "lose").setScale(window.devicePixelRatio / 4);
         loser.setOrigin(0.5, 0);
 
-        let loserScoreText = this.add.text((game.config.width - ((game.config.width * 3 / 8) + 100)), game.config.height / 2, ("Score: " + loserScore), {
+        let loserScoreText = this.add.text((game.config.width / 2 + (game.config.width / 32)), game.config.height / 2, ("Score: " + loserScore), {
             fontSize: "32px",
             fill: "#000"
         });
@@ -393,9 +413,189 @@ class endGame extends Phaser.Scene {
             this.scene.start("MenuGame");
         }, this);
 
-
     }
 
+}
+
+class selectMenu extends Phaser.Scene {
+    constructor() {
+        super("SelectMenu");
+    }
+
+    create() {
+        this.addImage();
+    }
+
+    addImage() {
+
+        let Overlay3 = this.add.sprite(0, 0, "background");
+
+        Overlay3.setOrigin(0, 0);
+
+        Overlay3.displayWidth = game.config.width;
+        Overlay3.displayHeight = game.config.height;
+        Overlay3.alpha = 0.8;
+
+        let BackGround2 = this.add.image(game.config.width / 2, game.config.height / 8, "backBoard").setScale(game.config.height / game.config.width);
+
+        BackGround2.setOrigin(0.5, 0);
+
+
+
+        //Slime direito
+        let slimeslectPlayer2 = this.add.image(game.config.width / 2 + 150, game.config.height / 2 - 100, "slime").setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
+        slimeslectPlayer2.flipX = true;
+        let rightSelectPlayer2 = this.add.image(game.config.width / 2 + 200, game.config.height / 2, "play").setScale(window.devicePixelRatio / 6);
+        let leftSelectPlayer2 = this.add.image(game.config.width / 2+ 100, game.config.height / 2, "play").setScale(window.devicePixelRatio / 6);
+        leftSelectPlayer2.flipX = true;
+
+        let selectedPlayer2 = 0
+        rightSelectPlayer2.setInteractive();
+        rightSelectPlayer2.on("pointerup", function () {
+            selectedPlayer2++;
+            switch (selectedPlayer2) {
+                case 0: {
+                    slimeslectPlayer2.setTexture("slime");
+                    selectedSlimePlayer2 = "slime";
+                    break;
+                }
+                case 1: {
+                    slimeslectPlayer2.setTexture("slime1");
+                    selectedSlimePlayer2 = "slime1";
+                    break;
+                }
+                case 2: {
+                    slimeslectPlayer2.setTexture("slime2");
+                    selectedSlimePlayer2 = "slime2";
+                    break;
+                }
+                case 3: {
+                    slimeslectPlayer2.setTexture("slime3");
+                    selectedSlimePlayer2 = "slime3";
+                    break;
+                }
+                default: {
+                    selectedPlayer2 = 3;
+                }
+            }
+
+
+        }, this);
+        leftSelectPlayer2.setInteractive();
+        leftSelectPlayer2.on("pointerup", function () {
+            selectedPlayer2--;
+            switch (selectedPlayer2) {
+
+                case 0: {
+                    slimeslectPlayer2.setTexture("slime");
+                    selectedSlimePlayer2 = "slime";
+                    break;
+                }
+                case 1: {
+                    slimeslectPlayer2.setTexture("slime1");
+                    selectedSlimePlayer2 = "slime1";
+                    break;
+                }
+                case 2: {
+                    slimeslectPlayer2.setTexture("slime2");
+                    selectedSlimePlayer2 = "slime2";
+                    break;
+                }
+                case 3: {
+                    slimeslectPlayer2.setTexture("slime3");
+                    selectedSlimePlayer2 = "slime3";
+                    break;
+                }
+                default: {
+                    selectedPlayer2 = 0;
+                }
+
+            }
+
+
+        }, this);
+        //
+
+        //Slime esquerdo
+        let slimeslectPlayer1 = this.add.image(game.config.width / 2 - 150, game.config.height / 2 - 100, "slime").setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
+        let rightSelectPlayer1 = this.add.image(game.config.width / 2 - 100, game.config.height / 2, "play").setScale(window.devicePixelRatio / 6);
+        let leftSelectPlayer1 = this.add.image(game.config.width / 2- 200, game.config.height / 2, "play").setScale(window.devicePixelRatio / 6);
+        leftSelectPlayer1.flipX = true;
+
+        let selectedPlayer1 = 0
+        rightSelectPlayer1.setInteractive();
+        rightSelectPlayer1.on("pointerup", function () {
+            selectedPlayer1++;
+            switch (selectedPlayer1) {
+                case 0: {
+                    slimeslectPlayer1.setTexture("slime");
+                    selectedSlimePlayer1 = "slime";
+                    break;
+                }
+                case 1: {
+                    slimeslectPlayer1.setTexture("slime1");
+                    selectedSlimePlayer1 = "slime1";
+                    break;
+                }
+                case 2: {
+                    slimeslectPlayer1.setTexture("slime2");
+                    selectedSlimePlayer1 = "slime2";
+                    break;
+                }
+                case 3: {
+                    slimeslectPlayer1.setTexture("slime3");
+                    selectedSlimePlayer1 = "slime3";
+                    break;
+                }
+                default: {
+                    selectedPlayer1 = 3;
+                }
+            }
+
+
+        }, this);
+        leftSelectPlayer1.setInteractive();
+        leftSelectPlayer1.on("pointerup", function () {
+            selectedPlayer1--;
+            switch (selectedPlayer1) {
+
+                case 0: {
+                    slimeslectPlayer1.setTexture("slime");
+                    selectedSlimePlayer1 = "slime";
+                    break;
+                }
+                case 1: {
+                    slimeslectPlayer1.setTexture("slime1");
+                    selectedSlimePlayer1 = "slime1";
+                    break;
+                }
+                case 2: {
+                    slimeslectPlayer1.setTexture("slime2");
+                    selectedSlimePlayer1 = "slime2";
+                    break;
+                }
+                case 3: {
+                    slimeslectPlayer1.setTexture("slime3");
+                    selectedSlimePlayer1 = "slime3";
+                    break;
+                }
+                default: {
+                    selectedPlayer1 = 0;
+                }
+
+            }
+
+
+        }, this);
+        //
+
+        let gameButton = this.add.image(game.config.width /2, game.config.height/2+ game.config.height /6,"play").setScale(window.devicePixelRatio/3);
+        gameButton.setInteractive();
+
+        gameButton.on("pointerup", function(){
+            this.scene.start("PlayGame");
+        },this);
+    }
 }
 
 
