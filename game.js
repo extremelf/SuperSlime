@@ -26,6 +26,11 @@ let score2Text;
 let selectedSlimePlayer1;
 let selectedSlimePlayer2;
 
+let selectedBackgroundFinal;
+
+let winnerSlime;
+let loserSlime;
+
 let wasd;
 
 let keyA;
@@ -97,19 +102,22 @@ class preloadGame extends Phaser.Scene {
 
     preload() {
 
-        this.load.image("background", "assets/PNG/game_background_4/game_background_4.png");
+
         this.load.image("ground", "assets/ground.png");
         this.load.image("baliza", "assets/baliza.png");
         this.load.image("balizaCollider", "assets/balizaCollider.png");
         this.load.image("ball", "assets/ball.png");
-        /*this.load.spritesheet("slime", "assets/img.png",
-            {frameWidth: 32, frameHeight: 48}
-        );
-         */
+        //Slimes
         this.load.image("slime", "assets/asdd.png");
         this.load.image("slime1", "assets/asddBlue.png");
         this.load.image("slime2", "assets/asddRed.png");
         this.load.image("slime3", "assets/asddGreen.png");
+
+        // Backgrounds
+        this.load.image("background", "assets/PNG/game_background_1/game_background_1.png");
+        this.load.image("background1", "assets/PNG/game_background_2/game_background_2.png");
+        this.load.image("background2", "assets/PNG/game_background_3/game_background_3.1.png");
+        this.load.image("background3", "assets/PNG/game_background_4/game_background_4.png");
 
         this.load.image("title", "assets/title.png"); //
         this.load.image("tile", "assets/tile.png"); //
@@ -156,7 +164,7 @@ class preloadGame extends Phaser.Scene {
 
          */
 
-        this.scene.start("SelectMenu");
+        this.scene.start("MenuGame");
     }
 }
 
@@ -199,7 +207,7 @@ class menuGame extends Phaser.Scene {
         playButton.on("pointerup", function () {
             this.guiGroup.toggleVisible();
             this.guiGroup.active = false;
-            this.scene.start("PlayGame");
+            this.scene.start("SelectMenu");
         }, this);
 
         this.guiGroup.add(playButton);
@@ -221,7 +229,7 @@ class playGame extends Phaser.Scene {
     }
 
     addBackground() {
-        background = this.add.sprite(0, 0, "background");
+        background = this.add.sprite(0, 0, selectedBackgroundFinal);
         background.setOrigin(0, 0);
         background.displayWidth = game.config.width + 100;
         background.displayHeight = game.config.height + 100;
@@ -351,10 +359,14 @@ class playGame extends Phaser.Scene {
         if (score1 === 2 || score2 === 2) {
             if (score1 > score2) {
                 winnerScore = score1;
+                winnerSlime = selectedSlimePlayer1;
                 loserScore = score2;
+                loserSlime = selectedSlimePlayer2;
             } else {
                 winnerScore = score2;
+                winnerSlime = selectedSlimePlayer2;
                 loserScore = score1;
+                loserSlime = selectedSlimePlayer1;
             }
             this.scene.start("EndGame");
         }
@@ -372,7 +384,7 @@ class endGame extends Phaser.Scene {
     }
 
     addFinalInfo() {
-        let Overlay2 = this.add.sprite(0, 0, "background");
+        let Overlay2 = this.add.sprite(0, 0, selectedBackgroundFinal);
 
         Overlay2.setOrigin(0, 0);
 
@@ -393,7 +405,7 @@ class endGame extends Phaser.Scene {
             fill: "#000"
         });
 
-        let winnerUser = this.add.image((game.config.width * 3 / 8) + 100, game.config.height * 3 / 8, "slime");
+        let winnerUser = this.add.image((game.config.width * 3 / 8) + 100, game.config.height * 3 / 8, winnerSlime).setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
 
         let loser = this.add.sprite(game.config.width - ((game.config.width * 3 / 8) + 100), game.config.height / 8 + 100, "lose").setScale(window.devicePixelRatio / 4);
         loser.setOrigin(0.5, 0);
@@ -402,6 +414,7 @@ class endGame extends Phaser.Scene {
             fontSize: "32px",
             fill: "#000"
         });
+        let loserUser = this.add.image(game.config.width - ((game.config.width * 3 / 8) + 100), game.config.height * 3 / 8, loserSlime).setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
 
         let playButton2X = game.config.width / 2;
         let playButton2Y = game.config.height * 3 / 4 - 100;
@@ -428,25 +441,105 @@ class selectMenu extends Phaser.Scene {
 
     addImage() {
 
-        let Overlay3 = this.add.sprite(0, 0, "background");
+        let Background3 = this.add.image(0, 0, "background");
 
-        Overlay3.setOrigin(0, 0);
+        Background3.setOrigin(0, 0);
 
-        Overlay3.displayWidth = game.config.width;
-        Overlay3.displayHeight = game.config.height;
-        Overlay3.alpha = 0.8;
+        Background3.displayWidth = game.config.width;
+        Background3.displayHeight = game.config.height;
+        Background3.alpha = 0.8;
 
-        let BackGround2 = this.add.image(game.config.width / 2, game.config.height / 8, "backBoard").setScale(game.config.height / game.config.width);
+        let BackBoard = this.add.image(game.config.width / 2, game.config.height / 8, "backBoard").setScale(game.config.height / game.config.width);
 
-        BackGround2.setOrigin(0.5, 0);
+        BackBoard.setOrigin(0.5, 0);
+
+        //Background choice
+
+        let miniBackground = this.add.image(game.config.width / 2, (game.config.height *3/8) - 150, "background").setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
+        let selectedBackground = 0;
+        let backgroundRightSelect = this.add.image((game.config.width/2)+50,game.config.height*3/8,"play").setScale(window.devicePixelRatio/6);
+        let backgroundLeftSelect = this.add.image((game.config.width/2)-50,game.config.height*3/8,"play").setScale(window.devicePixelRatio/6);
+        backgroundLeftSelect.flipX = true;
+
+        backgroundLeftSelect.setInteractive();
 
 
+        backgroundLeftSelect.on("pointerup", function(){
+            selectedBackground--;
+
+            switch(selectedBackground){
+                case 0:{
+                    Background3.setTexture("background");
+                    miniBackground.setTexture("background");
+                    selectedBackgroundFinal = "background";
+                    break;
+                }
+                case 1:{
+                    Background3.setTexture("background1");
+                    miniBackground.setTexture("background1");
+                    selectedBackgroundFinal = "background1";
+                    break;
+                }
+                case 2:{
+                    Background3.setTexture("background2");
+                    miniBackground.setTexture("background2");
+                    selectedBackgroundFinal = "background2";
+                    break;
+                }
+                case 3:{
+                    Background3.setTexture("background3");
+                    miniBackground.setTexture("background3");
+                    selectedBackgroundFinal = "background3";
+                    break;
+                }
+                default:{
+                    selectedBackground = 0;
+                }
+            }
+        },this);
+
+        backgroundRightSelect.setInteractive();
+        backgroundRightSelect.on("pointerup", function(){
+            selectedBackground++;
+
+            switch(selectedBackground){
+                case 0:{
+                    Background3.setTexture("background");
+                    miniBackground.setTexture("background");
+                    selectedBackgroundFinal = "background";
+                    break;
+                }
+                case 1:{
+                    Background3.setTexture("background1");
+                    miniBackground.setTexture("background1");
+                    selectedBackgroundFinal = "background1";
+                    break;
+                }
+                case 2:{
+                    Background3.setTexture("background2");
+                    miniBackground.setTexture("background2");
+                    selectedBackgroundFinal = "background2";
+                    break;
+                }
+                case 3:{
+                    Background3.setTexture("background3");
+                    miniBackground.setTexture("background3");
+                    selectedBackgroundFinal = "background3";
+                    break;
+                }
+                default:{
+                    selectedBackground = 3;
+                }
+            }
+        },this);
+
+        //
 
         //Slime direito
-        let slimeslectPlayer2 = this.add.image(game.config.width / 2 + 150, game.config.height / 2 - 100, "slime").setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
+        let slimeslectPlayer2 = this.add.image(game.config.width / 2 + 150, game.config.height / 2 - 100 + game.config.height / 10, "slime").setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
         slimeslectPlayer2.flipX = true;
-        let rightSelectPlayer2 = this.add.image(game.config.width / 2 + 200, game.config.height / 2, "play").setScale(window.devicePixelRatio / 6);
-        let leftSelectPlayer2 = this.add.image(game.config.width / 2+ 100, game.config.height / 2, "play").setScale(window.devicePixelRatio / 6);
+        let rightSelectPlayer2 = this.add.image(game.config.width / 2 + 200, game.config.height / 2 + game.config.height / 10, "play").setScale(window.devicePixelRatio / 6);
+        let leftSelectPlayer2 = this.add.image(game.config.width / 2 + 100, game.config.height / 2 + game.config.height / 10, "play").setScale(window.devicePixelRatio / 6);
         leftSelectPlayer2.flipX = true;
 
         let selectedPlayer2 = 0
@@ -517,9 +610,9 @@ class selectMenu extends Phaser.Scene {
         //
 
         //Slime esquerdo
-        let slimeslectPlayer1 = this.add.image(game.config.width / 2 - 150, game.config.height / 2 - 100, "slime").setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
-        let rightSelectPlayer1 = this.add.image(game.config.width / 2 - 100, game.config.height / 2, "play").setScale(window.devicePixelRatio / 6);
-        let leftSelectPlayer1 = this.add.image(game.config.width / 2- 200, game.config.height / 2, "play").setScale(window.devicePixelRatio / 6);
+        let slimeslectPlayer1 = this.add.image(game.config.width / 2 - 150, game.config.height / 2 - 100 + game.config.height / 10, "slime").setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
+        let rightSelectPlayer1 = this.add.image(game.config.width / 2 - 100, game.config.height / 2 + game.config.height / 10, "play").setScale(window.devicePixelRatio / 6);
+        let leftSelectPlayer1 = this.add.image(game.config.width / 2 - 200, game.config.height / 2 + game.config.height / 10, "play").setScale(window.devicePixelRatio / 6);
         leftSelectPlayer1.flipX = true;
 
         let selectedPlayer1 = 0
@@ -589,12 +682,14 @@ class selectMenu extends Phaser.Scene {
         }, this);
         //
 
-        let gameButton = this.add.image(game.config.width /2, game.config.height/2+ game.config.height /6,"play").setScale(window.devicePixelRatio/3);
+        // PlayButton
+        let gameButton = this.add.image(game.config.width / 2, game.config.height / 2 + game.config.height / 5, "play").setScale(window.devicePixelRatio / 6).setOrigin(0.5, 0.5);
         gameButton.setInteractive();
 
-        gameButton.on("pointerup", function(){
+        gameButton.on("pointerup", function () {
             this.scene.start("PlayGame");
-        },this);
+        }, this);
+        //
     }
 }
 
